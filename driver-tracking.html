@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Tracking - Roshi Transport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFF8E7 0%, #F5E6D3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(255, 165, 0, 0.3);
+        }
+
+        .header h1 {
+            color: #2C1810;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #5D4037;
+            font-size: 1em;
+            font-weight: 400;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #5D4037;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #FFE4B5;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            color: #2C1810;
+            transition: all 0.3s ease;
+            background: #FFFBF0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .status-indicator {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-inactive {
+            background: #F5F5F5;
+            color: #757575;
+            display: block;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #FFF8E7;
+            border: 2px solid #FFE4B5;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box p {
+            color: #5D4037;
+            font-size: 0.85em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .location-info {
+            background: #FFFBF0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .location-info p {
+            color: #8D6E63;
+            font-size: 0.8em;
+            margin: 5px 0;
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            color: #D32F2F;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        footer {
+            text-align: center;
+            color: #8D6E63;
+            font-size: 0.85em;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Driver Tracking</h1>
+            <p>Roshi Transport Corporation</p>
+        </div>
+
+        <div class="card">
+            <div class="status-indicator status-inactive" id="statusInactive">
+                🔴 Tracking Inactive
+            </div>
+            <div class="status-indicator status-active" id="statusActive">
+                🟢 Tracking Active - Location Updating
+            </div>
+
+            <div class="form-group">
+                <label>Driver Name</label>
+                <input type="text" id="driverName" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="driverMobile" placeholder="Enter 10 digit mobile number" maxlength="10">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-start" id="startBtn" onclick="startTracking()">
+                    Start Journey
+                </button>
+                <button class="btn btn-stop" id="stopBtn" onclick="stopTracking()" disabled>
+                    Stop Journey
+                </button>
+            </div>
+
+            <div class="location-info" id="locationInfo">
+                <p><strong>Last Update:</strong> <span id="lastUpdate">-</span></p>
+                <p><strong>Updates Sent:</strong> <span id="updateCount">0</span></p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="info-box">
+                <p><strong>📱 Important:</strong> Keep this page open in your browser while driving.</p>
+                <p><strong>🔋 Tip:</strong> Connect your phone to charger for best results.</p>
+                <p><strong>📍 Privacy:</strong> Location tracking only active during journey.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024 Roshi Transport Corporation. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyOhs1ADd1E5cVeq5i6QuLn9gplFdgGtdDebQafz5rFJ4cSkY0Z4tmKV1gkwFAFxKQEVA/exec';
+        let trackingInterval = null;
+        let updateCount = 0;
+        let driverData = {};
+
+        // Load saved data on page load
+        window.onload = function() {
+            const saved = localStorage.getItem('driverTracking');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('driverName').value = data.name || '';
+                document.getElementById('driverMobile').value = data.mobile || '';
+                
+                if (data.isTracking) {
+                    driverData = data;
+                    updateCount = data.updateCount || 0;
+                    resumeTracking();
+                }
+            }
+        };
+
+        function validateInputs() {
+            const name = document.getElementById('driverName').value.trim();
+            const mobile = document.getElementById('driverMobile').value.trim();
+
+            if (!name) {
+                showError('Please enter your name');
+                return false;
+            }
+
+            if (!mobile || mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+                showError('Please enter valid 10 digit mobile number');
+                return false;
+            }
+
+            return true;
+        }
+
+        function startTracking() {
+            if (!validateInputs()) return;
+
+            if (!navigator.geolocation) {
+                showError('Geolocation is not supported by your browser');
+                return;
+            }
+
+            const name = document.getElementById('driverName').value.trim();
+            const mobile = document.getElementById('driverMobile').value.trim();
+
+            driverData = {
+                name: name,
+                mobile: mobile,
+                isTracking: true,
+                updateCount: 0
+            };
+
+            // Disable inputs and update UI
+            document.getElementById('driverName').disabled = true;
+            document.getElementById('driverMobile').disabled = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('statusInactive').style.display = 'none';
+            document.getElementById('statusActive').style.display = 'block';
+            document.getElementById('locationInfo').style.display = 'block';
+
+            // Send initial location
+            sendLocation();
+
+            // Start interval (every 5 minutes = 300000ms)
+            trackingInterval = setInterval(sendLocation, 300000);
+
+            // Save to localStorage
+            localStorage.setItem('driverTracking', JSON.stringify(driverData));
+        }
+
+        function resumeTracking() {
+            document.getElementById('driverName').disabled = true;
+            document.getElementById('driverMobile').disabled = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('statusInactive').style.display = 'none';
+            document.getElementById('statusActive').style.display = 'block';
+            document.getElementById('locationInfo').style.display = 'block';
+            document.getElementById('updateCount').textContent = updateCount;
+
+            trackingInterval = setInterval(sendLocation, 300000);
+        }
+
+        function stopTracking() {
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+                trackingInterval = null;
+            }
+
+            // Send final location with stopped status
+            sendLocation(true);
+
+            // Reset UI
+            document.getElementById('driverName').disabled = false;
+            document.getElementById('driverMobile').disabled = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('statusInactive').style.display = 'block';
+            document.getElementById('statusActive').style.display = 'none';
+            document.getElementById('locationInfo').style.display = 'none';
+
+            // Clear localStorage
+            localStorage.removeItem('driverTracking');
+            updateCount = 0;
+            
+            showError('Journey stopped successfully', true);
+        }
+
+        function sendLocation(isStopped = false) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const data = {
+                        name: driverData.name,
+                        mobile: driverData.mobile,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        timestamp: new Date().toISOString(),
+                        status: isStopped ? 'Stopped' : 'Active'
+                    };
+
+                    fetch(API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    }).then(() => {
+                        updateCount++;
+                        document.getElementById('updateCount').textContent = updateCount;
+                        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('en-IN');
+                        
+                        driverData.updateCount = updateCount;
+                        localStorage.setItem('driverTracking', JSON.stringify(driverData));
+                    }).catch(error => {
+                        console.error('Error sending location:', error);
+                    });
+                },
+                function(error) {
+                    showError('Unable to get location. Please enable location services.');
+                    console.error('Geolocation error:', error);
+                }
+            );
+        }
+
+        function showError(message, isSuccess = false) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            errorDiv.style.background = isSuccess ? '#E8F5E9' : '#FFEBEE';
+            errorDiv.style.color = isSuccess ? '#2E7D32' : '#D32F2F';
+
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
