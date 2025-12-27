@@ -567,3 +567,17 @@
     </script>
 </body>
 </html>
+                document.getElementById('availableLoads').innerHTML = errorHTML;
+                document.getElementById('completedLoads').innerHTML = errorHTML;
+            }
+        }
+
+        // Initial load
+        fetchData();
+
+        // Auto-refresh every 2 minutes
+        setInterval(fetchData, REFRESH_INTERVAL);
+    </script>
+</body>
+
+</html>
